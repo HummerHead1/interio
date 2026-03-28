@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: var(--t-bg);
+  --color-surface: var(--t-surface);
+  --color-surface-light: var(--t-surface-light);
+  --color-accent: var(--t-accent);
+  --color-accent-light: var(--t-accent-light);
+  --color-text: var(--t-text);
+  --color-text-dim: var(--t-text-dim);
+  --color-border: var(--t-border);
+}
+
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
+  --t-bg: #0C0C0E;
+  --t-surface: #161619;
+  --t-surface-light: #1E1E22;
+  --t-accent: #D4A574;
+  --t-accent-light: #E8C9A0;
+  --t-text: #F0EDE8;
+  --t-text-dim: #8A8A8E;
+  --t-border: #2A2A2E;
+  --t-header-bg: rgba(12, 12, 14, 0.8);
+  --t-card-shadow: rgba(212, 165, 116, 0.05);
+  --t-card-hover-border: rgba(212, 165, 116, 0.4);
+  --t-model-bg: #0C0C0E;
+  --t-spinner-track: #2A2A2E;
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --t-bg: #FAFAF8;
+  --t-surface: #FFFFFF;
+  --t-surface-light: #F5F3EF;
+  --t-accent: #A0744A;
+  --t-accent-light: #C4956A;
+  --t-text: #1A1A1D;
+  --t-text-dim: #6B6B70;
+  --t-border: #E2E0DB;
+  --t-header-bg: rgba(250, 250, 248, 0.85);
+  --t-card-shadow: rgba(0, 0, 0, 0.06);
+  --t-card-hover-border: rgba(160, 116, 74, 0.5);
+  --t-model-bg: #F0EDE8;
+  --t-spinner-track: #E2E0DB;
+}
+
+body {
+  background: var(--t-bg);
+  color: var(--t-text);
+  font-family: "DM Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+model-viewer {
+  --poster-color: transparent;
+}
+
+/* Smooth page transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Staggered children */
+.stagger > * {
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger > *:nth-child(8) { animation-delay: 0.4s; }
+
+/* Hide scrollbar for filter rows */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
