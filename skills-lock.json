@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "skills": {
+    "composio": {
+      "source": "composiohq/skills",
+      "sourceType": "github",
+      "computedHash": "b6c3b70c8d2f122bf372a0566c520d2f70a230f2e6072f45d005208a4d220e3a"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "516bd2154eb843a8240e43d5b285229129853114ad7075a5e141e1c08e408c84"
+    },
+    "frontend-design-pro": {
+      "source": "binjuhor/shadcn-lar",
+      "sourceType": "github",
+      "computedHash": "ac0ee19a6c01837e02fe4d79464acc59dd0fe203f9b27608d87617f865c1d814"
+    },
+    "remotion-best-practices": {
+      "source": "remotion-dev/skills",
+      "sourceType": "github",
+      "computedHash": "6f22ccc0dd7103de270a465b30e44b001bcee4751e43197bba60680e69928635"
+    }
+  }
+}
