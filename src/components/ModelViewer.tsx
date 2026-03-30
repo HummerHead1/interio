@@ -53,11 +53,11 @@ export default function ModelViewer({
       ar-modes="webxr scene-viewer quick-look"
       camera-controls
       auto-rotate
-      shadow-intensity="1.2"
-      shadow-softness="0.8"
+      shadow-intensity="1.5"
+      shadow-softness="1"
       tone-mapping="commerce"
       environment-image="neutral"
-      exposure="1.0"
+      exposure="1.1"
       rotation-per-second="12deg"
       interaction-prompt="none"
       poster={poster}

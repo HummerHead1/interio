@@ -5,6 +5,7 @@ import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { getProductById } from "@/data/products";
+import FavoriteButton from "@/components/FavoriteButton";
 
 const ModelViewer = dynamic(() => import("@/components/ModelViewer"), {
   ssr: false,
@@ -85,11 +86,13 @@ export default function ProductPage() {
 
       {/* 3D Viewer */}
       <div
-        className="relative pt-14 transition-colors duration-300"
+        className="relative pt-14 room-stage transition-colors duration-300"
         style={{ height: "55dvh", backgroundColor: "var(--t-model-bg)" }}
       >
+        <div className="room-baseboard" />
+        <div className="room-shadow" />
         {!modelLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center z-10">
+          <div className="absolute inset-0 flex items-center justify-center z-[3]">
             <div className="text-center">
               <div
                 className="w-10 h-10 rounded-full animate-spin mx-auto mb-3"
@@ -110,32 +113,19 @@ export default function ProductPage() {
           alt={product.name}
           onLoad={() => setModelLoaded(true)}
           onARStatus={setArStatus}
-          className="w-full h-full"
+          className="w-full h-full relative z-[2]"
         />
 
-        {/* AR Button */}
-        <button
-          onClick={handleAR}
-          className="absolute bottom-4 right-4 z-20 font-semibold px-5 py-2.5 rounded-full flex items-center gap-2 shadow-lg transition-colors active:scale-95"
+        {/* Favorite Button */}
+        <div
+          className="absolute bottom-4 right-4 z-20 w-11 h-11 rounded-full flex items-center justify-center shadow-lg"
           style={{
-            backgroundColor: "var(--t-accent)",
-            color: "var(--t-bg)",
+            backgroundColor: "var(--t-surface)",
+            border: "1px solid var(--t-border)",
           }}
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-          </svg>
-          View in AR
-        </button>
+          <FavoriteButton productId={product.id} size="md" />
+        </div>
 
         {arStatus === "failed" && (
           <div
@@ -177,9 +167,13 @@ export default function ProductPage() {
 
           <p className="text-sm mb-4" style={{ color: "var(--t-text-dim)" }}>
             from{" "}
-            <span className="font-medium" style={{ color: "var(--t-accent)" }}>
+            <Link
+              href={`/browse?store=${encodeURIComponent(product.store)}`}
+              className="font-medium underline-offset-2 hover:underline"
+              style={{ color: "var(--t-accent)" }}
+            >
               {product.store}
-            </span>
+            </Link>
           </p>
 
           {/* Variants */}
@@ -250,13 +244,18 @@ export default function ProductPage() {
       >
         <button
           onClick={handleAR}
-          className="flex-1 font-semibold py-3 rounded-full transition-colors"
+          className="flex-1 font-semibold py-3 rounded-full transition-colors flex items-center justify-center gap-2"
           style={{
             backgroundColor: "var(--t-bg)",
             color: "var(--t-text)",
             border: "1px solid var(--t-border)",
           }}
         >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+            <line x1="12" y1="22.08" x2="12" y2="12" />
+          </svg>
           View in AR
         </button>
         <a

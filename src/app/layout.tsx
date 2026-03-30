@@ -1,18 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Playfair_Display } from "next/font/google";
+import { Outfit, Fraunces } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
+import AuthProvider from "@/components/AuthProvider";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+// Body: Outfit — geometric warmth, clean personality without DM Sans blandness
+const outfit = Outfit({
   variable: "--font-dm-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const playfair = Playfair_Display({
+// Headings: Fraunces — variable optical serif, distinctive editorial character
+// axes: opsz (optical size), wght, wdth, SOFT (softness)
+const fraunces = Fraunces({
   variable: "--font-playfair",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -35,12 +42,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${fraunces.variable}`}>
       <body
         className="min-h-dvh flex flex-col"
         style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </AuthProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

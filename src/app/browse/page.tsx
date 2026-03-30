@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
-import { getProductsByCategory } from "@/data/products";
+import { getProductsByCategory, searchProducts } from "@/data/products";
 
 const categories = [
   { key: "all", label: "All" },
@@ -13,16 +14,37 @@ const categories = [
   { key: "tables", label: "Tables" },
 ];
 
-const stores = ["All", "IKEA", "Bonami", "Alza"];
+const stores = ["All", "Alza", "Bonami", "XXXLutz"];
 
 export default function BrowsePage() {
+  return (
+    <Suspense>
+      <BrowseContent />
+    </Suspense>
+  );
+}
+
+function BrowseContent() {
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [store, setStore] = useState("All");
+
+  // Read store from URL query param on mount
+  useEffect(() => {
+    const storeParam = searchParams.get("store");
+    if (storeParam && stores.includes(storeParam)) {
+      setStore(storeParam);
+    }
+  }, [searchParams]);
   const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">(
     "default"
   );
 
-  let filtered = getProductsByCategory(category);
+  // If searching, search takes priority over category filter
+  let filtered = search.trim()
+    ? searchProducts(search)
+    : getProductsByCategory(category);
   if (store !== "All") filtered = filtered.filter((p) => p.store === store);
   if (sortBy === "price-asc")
     filtered = [...filtered].sort((a, b) => a.price - b.price);
@@ -41,13 +63,65 @@ export default function BrowsePage() {
             Browse Furniture
           </h1>
 
+          {/* Search bar */}
+          <div className="relative mb-4">
+            <svg
+              className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--t-text-dim)"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                if (e.target.value.trim()) setCategory("all");
+              }}
+              placeholder="Search furniture... e.g. &quot;red chair&quot; or &quot;STEFAN&quot;"
+              className="w-full pl-11 pr-10 py-3 rounded-xl text-sm outline-none transition-all duration-200 placeholder:opacity-50"
+              style={{
+                backgroundColor: "var(--t-surface)",
+                color: "var(--t-text)",
+                border: "1px solid var(--t-border)",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "var(--t-accent)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "var(--t-border)";
+              }}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center text-xs"
+                style={{
+                  backgroundColor: "var(--t-surface-light)",
+                  color: "var(--t-text-dim)",
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           {/* Category filters */}
           <div className="flex gap-2 overflow-x-auto pb-3 no-scrollbar">
             {categories.map((c) => (
               <button
                 key={c.key}
                 onClick={() => setCategory(c.key)}
-                className="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200"
+                className="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap filter-pill"
+                data-active={category === c.key}
                 style={{
                   backgroundColor:
                     category === c.key ? "var(--t-accent)" : "var(--t-surface)",
@@ -70,7 +144,8 @@ export default function BrowsePage() {
               <button
                 key={s}
                 onClick={() => setStore(s)}
-                className="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200"
+                className="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap filter-pill"
+                data-active={store === s}
                 style={{
                   backgroundColor:
                     store === s
@@ -105,15 +180,26 @@ export default function BrowsePage() {
           </div>
 
           {/* Active filter summary */}
-          {(category !== "all" || store !== "All") && (
-            <div className="flex items-center gap-2 pb-3">
+          {(category !== "all" || store !== "All" || search.trim()) && (
+            <div className="flex items-center gap-2 pb-3 flex-wrap">
               <span
                 className="text-xs"
                 style={{ color: "var(--t-text-dim)" }}
               >
                 {filtered.length} product{filtered.length !== 1 && "s"}
               </span>
-              {category !== "all" && (
+              {search.trim() && (
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full"
+                  style={{
+                    backgroundColor: "var(--t-surface-light)",
+                    color: "var(--t-accent)",
+                  }}
+                >
+                  &ldquo;{search.trim()}&rdquo;
+                </span>
+              )}
+              {category !== "all" && !search.trim() && (
                 <span
                   className="text-xs px-2 py-0.5 rounded-full"
                   style={{
@@ -137,6 +223,7 @@ export default function BrowsePage() {
               )}
               <button
                 onClick={() => {
+                  setSearch("");
                   setCategory("all");
                   setStore("All");
                   setSortBy("default");

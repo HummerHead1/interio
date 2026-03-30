@@ -4,6 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Product } from "@/types/product";
+import FavoriteButton from "./FavoriteButton";
 
 const ModelViewer = dynamic(() => import("./ModelViewer"), { ssr: false });
 
@@ -13,21 +14,11 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link href={`/product/${product.id}`} className="group block">
       <div
-        className="relative rounded-2xl overflow-hidden transition-all duration-300"
+        className="relative rounded-2xl overflow-hidden product-card"
         style={{
           backgroundColor: "var(--t-surface)",
           border: "1px solid var(--t-border)",
           boxShadow: "0 2px 12px var(--t-card-shadow)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = "var(--t-card-hover-border)";
-          e.currentTarget.style.boxShadow = "0 8px 32px var(--t-card-shadow)";
-          e.currentTarget.style.transform = "translateY(-4px)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = "var(--t-border)";
-          e.currentTarget.style.boxShadow = "0 2px 12px var(--t-card-shadow)";
-          e.currentTarget.style.transform = "translateY(0)";
         }}
       >
         {/* 3D Preview */}
@@ -51,39 +42,27 @@ export default function ProductCard({ product }: { product: Product }) {
             alt={product.name}
             onLoad={() => setLoaded(true)}
           />
+          {/* Favorite button */}
+          <div className="absolute top-2 right-2 z-10">
+            <FavoriteButton productId={product.id} size="sm" />
+          </div>
         </div>
 
         {/* Info */}
-        <div className="p-4">
-          <p
-            className="text-xs font-medium mb-1"
-            style={{ color: "var(--t-accent)" }}
-          >
-            {product.store}
-          </p>
-          <h3
-            className="text-base font-semibold transition-colors"
-            style={{
-              fontFamily: "var(--font-playfair)",
-              color: "var(--t-text)",
-            }}
-          >
-            {product.name}
-          </h3>
-          <div className="flex items-center justify-between mt-2">
-            <span
-              className="text-lg font-bold"
-              style={{ color: "var(--t-text)" }}
+        <div className="p-4 pt-3">
+          {/* Store tag + color swatches row */}
+          <div className="flex items-center justify-between mb-2">
+            <p
+              className="text-xs font-medium uppercase tracking-wider"
+              style={{ color: "var(--t-accent2)", letterSpacing: "0.12em", fontSize: "0.65rem" }}
             >
-              {product.currency === "CZK"
-                ? `${product.price.toLocaleString()} Kč`
-                : `€${(product.price / 100).toFixed(0)}`}
-            </span>
-            <div className="flex gap-1">
+              {product.store}
+            </p>
+            <div className="flex gap-1.5">
               {product.variants.map((v) => (
                 <span
                   key={v.name}
-                  className="w-3 h-3 rounded-full"
+                  className="w-2.5 h-2.5 rounded-full transition-transform duration-200 group-hover:scale-110"
                   style={{
                     backgroundColor: v.color,
                     border: "1px solid var(--t-border)",
@@ -92,13 +71,49 @@ export default function ProductCard({ product }: { product: Product }) {
               ))}
             </div>
           </div>
-          <p
-            className="text-xs mt-2"
-            style={{ color: "var(--t-text-dim)" }}
+
+          {/* Thin rule */}
+          <div
+            className="mb-3"
+            style={{
+              height: "1px",
+              background: "var(--t-border)",
+              opacity: 0.6,
+            }}
+          />
+
+          <h3
+            className="font-medium leading-snug transition-colors duration-200 group-hover:text-[var(--t-accent)] mb-3"
+            style={{
+              fontFamily: "var(--font-playfair)",
+              color: "var(--t-text)",
+              fontSize: "0.95rem",
+              letterSpacing: "-0.01em",
+            }}
           >
-            {product.dimensions.width} x {product.dimensions.depth} x{" "}
-            {product.dimensions.height} cm
-          </p>
+            {product.name}
+          </h3>
+
+          <div className="flex items-end justify-between">
+            <span
+              className="font-semibold tabular-nums"
+              style={{
+                color: "var(--t-text)",
+                fontSize: "1.05rem",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {product.currency === "CZK"
+                ? `${product.price.toLocaleString()} Kč`
+                : `€${(product.price / 100).toFixed(0)}`}
+            </span>
+            <p
+              className="text-xs leading-tight text-right"
+              style={{ color: "var(--t-text-dim)", fontSize: "0.65rem" }}
+            >
+              {product.dimensions.width}&thinsp;×&thinsp;{product.dimensions.depth}&thinsp;×&thinsp;{product.dimensions.height}&thinsp;cm
+            </p>
+          </div>
         </div>
       </div>
     </Link>
