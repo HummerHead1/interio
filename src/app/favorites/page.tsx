@@ -6,9 +6,11 @@ import ProductCard from "@/components/ProductCard";
 import { useAuth } from "@/components/AuthProvider";
 import { products } from "@/data/products";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n";
 
 export default function FavoritesPage() {
   const { user, favorites, loading } = useAuth();
+  const { t } = useLanguage();
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -59,10 +61,10 @@ export default function FavoritesPage() {
               className="text-2xl font-semibold mb-3"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Sign in to see favorites
+              {t.favorites.notLoggedInTitle}
             </h1>
             <p className="text-sm mb-6" style={{ color: "var(--t-text-dim)" }}>
-              Save furniture you love and come back to it later.
+              {t.favorites.notLoggedInSubtitle}
             </p>
             <Link
               href="/auth/login"
@@ -72,7 +74,7 @@ export default function FavoritesPage() {
                 color: "var(--t-bg)",
               }}
             >
-              Sign in
+              {t.favorites.signIn}
             </Link>
           </div>
         </main>
@@ -91,7 +93,7 @@ export default function FavoritesPage() {
               className="text-3xl font-bold"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              My Favorites
+              {t.favorites.title}
             </h1>
 
             {favProducts.length >= 2 && !selectMode && (
@@ -125,7 +127,7 @@ export default function FavoritesPage() {
                     d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"
                   />
                 </svg>
-                AR Session
+                {t.favorites.arSession}
               </button>
             )}
           </div>
@@ -145,13 +147,13 @@ export default function FavoritesPage() {
                   className="text-xs underline"
                   style={{ color: "var(--t-text-dim)" }}
                 >
-                  Cancel
+                  {t.favorites.cancel}
                 </button>
                 <span
                   className="text-sm font-medium"
                   style={{ color: "var(--t-text)" }}
                 >
-                  {selected.size} selected
+                  {t.favorites.selected(selected.size)}
                 </span>
                 <button
                   onClick={() =>
@@ -163,8 +165,8 @@ export default function FavoritesPage() {
                   style={{ color: "var(--t-accent)" }}
                 >
                   {selected.size === favProducts.length
-                    ? "Deselect all"
-                    : "Select all"}
+                    ? t.favorites.deselectAll
+                    : t.favorites.selectAll}
                 </button>
               </div>
 
@@ -200,7 +202,7 @@ export default function FavoritesPage() {
                     d="M5 3l14 9-14 9V3z"
                   />
                 </svg>
-                Start
+                {t.favorites.start}
               </Link>
             </div>
           )}
@@ -211,7 +213,7 @@ export default function FavoritesPage() {
                 className="text-sm mb-4"
                 style={{ color: "var(--t-text-dim)" }}
               >
-                You haven&apos;t saved any favorites yet.
+                {t.favorites.empty}
               </p>
               <Link
                 href="/browse"
@@ -221,7 +223,7 @@ export default function FavoritesPage() {
                   color: "var(--t-bg)",
                 }}
               >
-                Browse Furniture
+                {t.favorites.browseFurniture}
               </Link>
             </div>
           ) : (
@@ -283,14 +285,14 @@ export default function FavoritesPage() {
                 className="text-sm mb-3"
                 style={{ color: "var(--t-text-dim)" }}
               >
-                Add more favorites to start a multi-item AR session
+                {t.favorites.addMoreHint}
               </p>
               <Link
                 href="/browse"
                 className="text-sm underline"
                 style={{ color: "var(--t-accent)" }}
               >
-                Browse more furniture
+                {t.favorites.browseMore}
               </Link>
             </div>
           )}

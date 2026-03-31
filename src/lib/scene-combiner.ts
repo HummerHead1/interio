@@ -23,8 +23,16 @@ export async function combineModelsToGLB(items: SceneItem[]): Promise<string> {
   const scene = new THREE.Scene();
 
   // Lighting
-  const ambient = new THREE.AmbientLight(0xffffff, 1.0);
+  const ambient = new THREE.AmbientLight(0xfff4e0, 0.7);
   scene.add(ambient);
+
+  const sunLight = new THREE.DirectionalLight(0xffe8c0, 1.6);
+  sunLight.position.set(-3, 5, 2);
+  scene.add(sunLight);
+
+  const fillLight = new THREE.DirectionalLight(0xd8eaff, 0.4);
+  fillLight.position.set(4, 3, -1);
+  scene.add(fillLight);
 
   // Load all models in parallel
   const loaded = await Promise.all(
@@ -41,50 +49,28 @@ export async function combineModelsToGLB(items: SceneItem[]): Promise<string> {
     )
   );
 
-  const floorThickness = 0.02; // 2cm thick slab
-
-  // Place furniture so bottom sits on top of floor (y = floorThickness)
   for (const { item, gltf } of loaded) {
-    const box = new THREE.Box3().setFromObject(gltf);
+    const wrapper = new THREE.Group();
+    wrapper.add(gltf);
+
+    // Apply rotation first
+    gltf.rotation.y = (item.rotation * Math.PI) / 180;
+    wrapper.updateMatrixWorld(true);
+
+    // Compute bounding box after rotation
+    const box = new THREE.Box3().setFromObject(wrapper);
     const center = box.getCenter(new THREE.Vector3());
-    gltf.position.x -= center.x;
-    gltf.position.z -= center.z;
-    // Place bottom of model on top of floor surface
-    gltf.position.y = floorThickness - box.min.y;
 
-    const radians = (item.rotation * Math.PI) / 180;
-    gltf.rotation.y = radians;
+    // Center horizontally, place bottom at y=0
+    wrapper.position.x = -center.x + item.x;
+    wrapper.position.z = -center.z + item.z;
+    wrapper.position.y = -box.min.y;
 
-    gltf.position.x += item.x;
-    gltf.position.z += item.z;
-
-    scene.add(gltf);
+    scene.add(wrapper);
   }
 
-  // --- Wooden floor slab ---
-  const furnitureBounds = new THREE.Box3();
-  for (const child of scene.children) {
-    if (child instanceof THREE.Light) continue;
-    furnitureBounds.expandByObject(child);
-  }
-  const fSize = furnitureBounds.getSize(new THREE.Vector3());
-  const fCenter = furnitureBounds.getCenter(new THREE.Vector3());
-
-  const floorPad = 0.6;
-  const floorW = fSize.x + floorPad * 2;
-  const floorD = fSize.z + floorPad * 2;
-
-  const floorGeo = new THREE.BoxGeometry(floorW, floorThickness, floorD);
-  const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x8B6040,
-    roughness: 0.7,
-    metalness: 0.02,
-  });
-  const floor = new THREE.Mesh(floorGeo, floorMat);
-
-  // Floor bottom at y=0, top at y=floorThickness — furniture sits on top
-  floor.position.set(fCenter.x, floorThickness / 2, fCenter.z);
-  scene.add(floor);
+  // NO 3D floor — CSS handles the visual floor behind model-viewer's
+  // transparent background. This avoids model-viewer auto-framing issues.
 
   // Export as GLB binary
   const exporter = new GLTFExporter();

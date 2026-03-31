@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "./AuthProvider";
 import { useRouter } from "next/navigation";
+import { hapticSuccess, hapticLight } from "@/lib/haptics";
 
 export default function FavoriteButton({
   productId,
@@ -26,6 +27,7 @@ export default function FavoriteButton({
     }
     setAnimating(true);
     toggleFavorite(productId);
+    isFav ? hapticLight() : hapticSuccess();
     setTimeout(() => setAnimating(false), 350);
   }
 

@@ -8,6 +8,8 @@ import { useAuth } from "@/components/AuthProvider";
 import { getProductById } from "@/data/products";
 import { Product } from "@/types/product";
 import type { ItemState } from "@/components/SceneEditor";
+import { useLanguage } from "@/lib/i18n";
+import { hapticSuccess, hapticHeavy } from "@/lib/haptics";
 
 const ModelViewer = dynamic(() => import("@/components/ModelViewer"), {
   ssr: false,
@@ -30,6 +32,7 @@ type ViewMode = "arrange" | "preview3d";
 function ARSessionContent() {
   const searchParams = useSearchParams();
   const { user, favorites, loading } = useAuth();
+  const { t } = useLanguage();
 
   const [viewMode, setViewMode] = useState<ViewMode>("arrange");
   const [combinedSrc, setCombinedSrc] = useState<string | null>(null);
@@ -89,6 +92,7 @@ function ARSessionContent() {
       blobUrlRef.current = blobUrl;
       setCombinedSrc(blobUrl);
       setViewMode("preview3d");
+      hapticSuccess();
     } catch (err) {
       console.error("Failed to combine:", err);
       setCombineError(true);
@@ -101,6 +105,7 @@ function ARSessionContent() {
     const mv = document.querySelector("model-viewer") as HTMLElement & {
       activateAR: () => void;
     };
+    hapticHeavy();
     mv?.activateAR();
   }, []);
 
@@ -118,9 +123,9 @@ function ARSessionContent() {
     return (
       <div className="min-h-dvh flex items-center justify-center px-4" style={{ backgroundColor: "var(--t-bg)" }}>
         <div className="text-center">
-          <h1 className="text-2xl font-semibold mb-3" style={{ fontFamily: "var(--font-playfair)" }}>Sign in to use AR Session</h1>
-          <p className="text-sm mb-6" style={{ color: "var(--t-text-dim)" }}>Save furniture to favorites, then place them all in your room.</p>
-          <Link href="/auth/login" className="inline-block font-semibold px-8 py-3 rounded-full" style={{ backgroundColor: "var(--t-accent)", color: "var(--t-bg)" }}>Sign in</Link>
+          <h1 className="text-2xl font-semibold mb-3" style={{ fontFamily: "var(--font-playfair)" }}>{t.arSession.notLoggedInTitle}</h1>
+          <p className="text-sm mb-6" style={{ color: "var(--t-text-dim)" }}>{t.arSession.notLoggedInSubtitle}</p>
+          <Link href="/auth/login" className="inline-block font-semibold px-8 py-3 rounded-full" style={{ backgroundColor: "var(--t-accent)", color: "var(--t-bg)" }}>{t.arSession.signIn}</Link>
         </div>
       </div>
     );
@@ -136,9 +141,9 @@ function ARSessionContent() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
             </svg>
           </div>
-          <h1 className="text-2xl font-semibold mb-3" style={{ fontFamily: "var(--font-playfair)" }}>No items selected</h1>
-          <p className="text-sm mb-6" style={{ color: "var(--t-text-dim)" }}>Add furniture to your favorites first, then start an AR session.</p>
-          <Link href="/favorites" className="inline-block font-semibold px-8 py-3 rounded-full" style={{ backgroundColor: "var(--t-accent)", color: "var(--t-bg)" }}>Go to Favorites</Link>
+          <h1 className="text-2xl font-semibold mb-3" style={{ fontFamily: "var(--font-playfair)" }}>{t.arSession.noItemsTitle}</h1>
+          <p className="text-sm mb-6" style={{ color: "var(--t-text-dim)" }}>{t.arSession.noItemsSubtitle}</p>
+          <Link href="/favorites" className="inline-block font-semibold px-8 py-3 rounded-full" style={{ backgroundColor: "var(--t-accent)", color: "var(--t-bg)" }}>{t.arSession.goToFavorites}</Link>
         </div>
       </div>
     );
@@ -151,11 +156,11 @@ function ARSessionContent() {
         <div className="h-14 flex items-center justify-between px-4">
           <Link href="/favorites" className="flex items-center gap-2" style={{ color: "var(--t-text-dim)" }}>
             <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-            <span className="text-sm">Back</span>
+            <span className="text-sm">{t.arSession.back}</span>
           </Link>
-          <p className="text-sm font-semibold" style={{ fontFamily: "var(--font-playfair)" }}>AR Session</p>
+          <p className="text-sm font-semibold" style={{ fontFamily: "var(--font-playfair)" }}>{t.arSession.title}</p>
           <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: "var(--t-accent)", color: "var(--t-bg)" }}>
-            {sessionProducts.length} items
+            {t.arSession.items(sessionProducts.length)}
           </span>
         </div>
 
@@ -170,7 +175,7 @@ function ARSessionContent() {
               border: viewMode === "arrange" ? "none" : "1px solid var(--t-border)",
             }}
           >
-            Arrange
+            {t.arSession.arrange}
           </button>
           <button
             onClick={() => {
@@ -187,7 +192,7 @@ function ARSessionContent() {
               border: viewMode === "preview3d" ? "none" : "1px solid var(--t-border)",
             }}
           >
-            3D Preview
+            {t.arSession.preview3d}
           </button>
         </div>
       </header>
@@ -201,11 +206,10 @@ function ARSessionContent() {
             <>
               <div className="mb-3">
                 <h2 className="text-lg font-bold mb-1" style={{ fontFamily: "var(--font-playfair)" }}>
-                  Arrange Your Furniture
+                  {t.arSession.arrangeTitle}
                 </h2>
                 <p className="text-xs" style={{ color: "var(--t-text-dim)" }}>
-                  Drag items to position them. Tap an item to select it, then use the rotation buttons.
-                  When ready, tap &quot;Preview 3D&quot; to see the combined scene.
+                  {t.arSession.arrangeHint}
                 </p>
               </div>
 
@@ -251,7 +255,7 @@ function ARSessionContent() {
 
               {/* Total */}
               <div className="mt-3 p-3 rounded-xl flex items-center justify-between" style={{ backgroundColor: "var(--t-surface)", border: "1px solid var(--t-border)" }}>
-                <span className="text-sm" style={{ color: "var(--t-text-dim)" }}>Total</span>
+                <span className="text-sm" style={{ color: "var(--t-text-dim)" }}>{t.arSession.total}</span>
                 <span className="text-lg font-bold" style={{ color: "var(--t-accent)" }}>
                   {sessionProducts.reduce((s, p) => s + p.price, 0).toLocaleString()} Kč
                 </span>
@@ -263,8 +267,8 @@ function ARSessionContent() {
           {viewMode === "preview3d" && (
             <>
               <div
-                className="relative rounded-2xl overflow-hidden"
-                style={{ height: "50dvh", backgroundColor: "var(--t-model-bg)", border: "1px solid var(--t-border)" }}
+                className="relative rounded-2xl overflow-hidden ar-preview-stage"
+                style={{ height: "50dvh", border: "1px solid var(--t-border)" }}
               >
 
                 {(!modelLoaded || combining) && (
@@ -272,7 +276,7 @@ function ARSessionContent() {
                     <div className="text-center">
                       <div className="w-10 h-10 rounded-full animate-spin mx-auto mb-3" style={{ border: "2px solid var(--t-spinner-track)", borderTopColor: "var(--t-accent)" }} />
                       <p className="text-xs" style={{ color: "var(--t-text-dim)" }}>
-                        {combining ? "Combining models..." : "Loading 3D scene..."}
+                        {combining ? t.arSession.combining : t.arSession.loadingScene}
                       </p>
                     </div>
                   </div>
@@ -289,21 +293,19 @@ function ARSessionContent() {
 
                 {/* Badge */}
                 <div className="absolute top-3 left-3 z-20 px-3 py-1.5 rounded-full text-xs font-medium" style={{ backgroundColor: "var(--t-surface)", color: "var(--t-accent)", border: "1px solid var(--t-border)" }}>
-                  {sessionProducts.length} items combined
+                  {t.arSession.itemsCombined(sessionProducts.length)}
                 </div>
               </div>
 
               <div className="mt-4 p-4 rounded-xl text-center" style={{ backgroundColor: "var(--t-surface)", border: "1px solid var(--t-border)" }}>
                 <p className="text-xs leading-relaxed" style={{ color: "var(--t-text-dim)" }}>
-                  <strong style={{ color: "var(--t-text)" }}>All items in one scene.</strong>{" "}
-                  Rotate to inspect. Tap &quot;View in AR&quot; to place this entire arrangement in your room.
-                  Go back to &quot;Arrange&quot; to adjust positions.
+                  {t.arSession.preview3dHint}
                 </p>
               </div>
 
               {combineError && (
                 <p className="text-xs text-red-400 text-center mt-3">
-                  Failed to combine models. Try again.
+                  {t.arSession.combineError}
                 </p>
               )}
             </>
@@ -323,14 +325,14 @@ function ARSessionContent() {
             {combining ? (
               <>
                 <div className="w-4 h-4 rounded-full animate-spin" style={{ border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff" }} />
-                Combining...
+                {t.arSession.combining}
               </>
             ) : (
               <>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
                 </svg>
-                Preview 3D &amp; AR
+                {t.arSession.preview3dAR}
               </>
             )}
           </button>
@@ -341,7 +343,7 @@ function ARSessionContent() {
               className="font-semibold py-3.5 px-5 rounded-full transition-colors"
               style={{ backgroundColor: "var(--t-bg)", color: "var(--t-text)", border: "1px solid var(--t-border)" }}
             >
-              Rearrange
+              {t.arSession.rearrange}
             </button>
             <button
               onClick={handleAR}
@@ -353,7 +355,7 @@ function ARSessionContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
               </svg>
-              View All in AR
+              {t.arSession.viewAllInAR}
             </button>
           </div>
         )}

@@ -6,6 +6,8 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { getProductById } from "@/data/products";
 import FavoriteButton from "@/components/FavoriteButton";
+import { useLanguage } from "@/lib/i18n";
+import { hapticHeavy } from "@/lib/haptics";
 
 const ModelViewer = dynamic(() => import("@/components/ModelViewer"), {
   ssr: false,
@@ -17,8 +19,10 @@ export default function ProductPage() {
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [arStatus, setArStatus] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   const handleAR = useCallback(() => {
+    hapticHeavy();
     const mv = document.querySelector("model-viewer") as HTMLElement & {
       activateAR: () => void;
     };
@@ -30,14 +34,14 @@ export default function ProductPage() {
       <div className="min-h-dvh flex items-center justify-center">
         <div className="text-center">
           <p style={{ color: "var(--t-text-dim)" }} className="mb-4">
-            Product not found
+            {t.product.notFound}
           </p>
           <Link
             href="/browse"
             className="underline"
             style={{ color: "var(--t-accent)" }}
           >
-            Browse products
+            {t.product.browseProducts}
           </Link>
         </div>
       </div>
@@ -84,13 +88,11 @@ export default function ProductPage() {
         </div>
       </header>
 
-      {/* 3D Viewer */}
+      {/* 3D Viewer — studio backdrop */}
       <div
-        className="relative pt-14 room-stage transition-colors duration-300"
-        style={{ height: "55dvh", backgroundColor: "var(--t-model-bg)" }}
+        className="relative pt-14 product-studio transition-colors duration-300"
+        style={{ height: "55dvh" }}
       >
-        <div className="room-baseboard" />
-        <div className="room-shadow" />
         {!modelLoaded && (
           <div className="absolute inset-0 flex items-center justify-center z-[3]">
             <div className="text-center">
@@ -102,7 +104,7 @@ export default function ProductPage() {
                 }}
               />
               <p className="text-xs" style={{ color: "var(--t-text-dim)" }}>
-                Loading 3D model...
+                {t.product.loadingModel}
               </p>
             </div>
           </div>
@@ -136,7 +138,7 @@ export default function ProductPage() {
               border: "1px solid var(--t-border)",
             }}
           >
-            AR requires a mobile device with camera
+            {t.product.arRequiresMobile}
           </div>
         )}
       </div>
@@ -166,7 +168,7 @@ export default function ProductPage() {
           </div>
 
           <p className="text-sm mb-4" style={{ color: "var(--t-text-dim)" }}>
-            from{" "}
+            {t.product.from}{" "}
             <Link
               href={`/browse?store=${encodeURIComponent(product.store)}`}
               className="font-medium underline-offset-2 hover:underline"
@@ -182,7 +184,7 @@ export default function ProductPage() {
               className="text-xs mb-2 uppercase tracking-wider"
               style={{ color: "var(--t-text-dim)" }}
             >
-              Colour — {product.variants[selectedVariant]?.name}
+              {t.product.colour} — {product.variants[selectedVariant]?.name}
             </p>
             <div className="flex gap-2">
               {product.variants.map((v, i) => (
@@ -207,9 +209,9 @@ export default function ProductPage() {
           {/* Dimensions */}
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
-              { label: "Width", val: product.dimensions.width },
-              { label: "Depth", val: product.dimensions.depth },
-              { label: "Height", val: product.dimensions.height },
+              { label: t.product.width, val: product.dimensions.width },
+              { label: t.product.depth, val: product.dimensions.depth },
+              { label: t.product.height, val: product.dimensions.height },
             ].map((d) => (
               <div
                 key={d.label}
@@ -219,7 +221,7 @@ export default function ProductPage() {
                 <p className="text-xs" style={{ color: "var(--t-text-dim)" }}>
                   {d.label}
                 </p>
-                <p className="text-sm font-semibold mt-1">{d.val} cm</p>
+                <p className="text-sm font-semibold mt-1">{d.val} {t.product.cm}</p>
               </div>
             ))}
           </div>
@@ -256,7 +258,7 @@ export default function ProductPage() {
             <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
             <line x1="12" y1="22.08" x2="12" y2="12" />
           </svg>
-          View in AR
+          {t.product.viewInAR}
         </button>
         <a
           href={product.buyUrl}
@@ -268,7 +270,7 @@ export default function ProductPage() {
             color: "var(--t-bg)",
           }}
         >
-          Buy at {product.store}
+          {t.product.buyAt(product.store)}
         </a>
       </div>
     </div>

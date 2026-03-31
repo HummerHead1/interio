@@ -1,10 +1,14 @@
+"use client";
+
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import { getFeaturedProducts } from "@/data/products";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n";
 
 export default function Home() {
   const featured = getFeaturedProducts();
+  const { t } = useLanguage();
 
   return (
     <>
@@ -63,7 +67,7 @@ export default function Home() {
               opacity: 0,
             }}
           >
-            Augmented Reality Furniture
+            {t.hero.eyebrow}
           </p>
 
           <h1
@@ -76,7 +80,7 @@ export default function Home() {
               opacity: 0,
             }}
           >
-            See it before
+            {t.hero.headline1}
             <br />
             <span
               style={{
@@ -85,7 +89,7 @@ export default function Home() {
                 fontWeight: 300,
               }}
             >
-              you buy it.
+              {t.hero.headline2}
             </span>
           </h1>
 
@@ -98,8 +102,7 @@ export default function Home() {
               opacity: 0,
             }}
           >
-            Browse furniture from Alza, Bonami & XXXLutz in 3D. Place it in your
-            space with AR before you commit.
+            {t.hero.subtitle}
           </p>
 
           <div
@@ -116,7 +119,7 @@ export default function Home() {
                 letterSpacing: "0.01em",
               }}
             >
-              Browse Furniture
+              {t.hero.cta}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
@@ -130,7 +133,7 @@ export default function Home() {
                 fontSize: "0.9rem",
               }}
             >
-              How it works
+              {t.hero.howItWorks}
             </a>
           </div>
 
@@ -171,7 +174,7 @@ export default function Home() {
                 className="text-xs font-medium uppercase tracking-widest mb-2"
                 style={{ color: "var(--t-accent2)", letterSpacing: "0.18em" }}
               >
-                Selection
+                {t.featured.eyebrow}
               </p>
               <h2
                 className="font-semibold leading-tight"
@@ -181,7 +184,7 @@ export default function Home() {
                   letterSpacing: "-0.01em",
                 }}
               >
-                Featured Pieces
+                {t.featured.title}
               </h2>
             </div>
             <Link
@@ -189,7 +192,7 @@ export default function Home() {
               className="text-sm font-medium link-hover flex items-center gap-1.5"
               style={{ color: "var(--t-text-dim)" }}
             >
-              View all
+              {t.featured.viewAll}
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
@@ -230,7 +233,7 @@ export default function Home() {
                 className="text-xs font-medium uppercase tracking-widest mb-3"
                 style={{ color: "var(--t-accent2)", letterSpacing: "0.18em" }}
               >
-                Process
+                {t.howItWorks.eyebrow}
               </p>
               <h2
                 className="font-semibold leading-tight"
@@ -240,7 +243,7 @@ export default function Home() {
                   letterSpacing: "-0.015em",
                 }}
               >
-                Three steps to certainty
+                {t.howItWorks.title}
               </h2>
             </div>
 
@@ -248,8 +251,8 @@ export default function Home() {
               {[
                 {
                   step: "01",
-                  title: "Browse",
-                  desc: "Explore furniture from Czech stores rendered in interactive 3D",
+                  title: t.howItWorks.steps[0].title,
+                  desc: t.howItWorks.steps[0].desc,
                   icon: (
                     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -258,8 +261,8 @@ export default function Home() {
                 },
                 {
                   step: "02",
-                  title: "Place in AR",
-                  desc: "Point your camera and see the piece live in your actual room",
+                  title: t.howItWorks.steps[1].title,
+                  desc: t.howItWorks.steps[1].desc,
                   icon: (
                     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
@@ -269,8 +272,8 @@ export default function Home() {
                 },
                 {
                   step: "03",
-                  title: "Buy",
-                  desc: "Go directly to the store page and complete your purchase with confidence",
+                  title: t.howItWorks.steps[2].title,
+                  desc: t.howItWorks.steps[2].desc,
                   icon: (
                     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
@@ -347,7 +350,7 @@ export default function Home() {
             className="text-xs font-medium uppercase tracking-widest mb-4"
             style={{ color: "var(--t-accent2)", letterSpacing: "0.18em" }}
           >
-            Get Started
+            {t.cta.eyebrow}
           </p>
           <h2
             className="font-semibold mb-4 leading-tight"
@@ -357,13 +360,13 @@ export default function Home() {
               letterSpacing: "-0.015em",
             }}
           >
-            Ready to redesign your space?
+            {t.cta.title}
           </h2>
           <p
             className="max-w-xs mx-auto mb-10 leading-relaxed"
             style={{ color: "var(--t-text-dim)", fontSize: "0.9rem" }}
           >
-            No app download needed. Works right in your browser.
+            {t.cta.subtitle}
           </p>
           <Link
             href="/browse"
@@ -374,7 +377,7 @@ export default function Home() {
               fontSize: "0.9rem",
             }}
           >
-            Start Browsing
+            {t.cta.button}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
@@ -389,8 +392,8 @@ export default function Home() {
           borderTop: "1px solid var(--t-border)",
         }}
       >
-        <p>Interio — 3PO642 Product management course prototype</p>
-        <p style={{ opacity: 0.6, fontSize: "0.75rem" }}>Created by Eldar, Mia, Maria and Dina</p>
+        <p>{t.footer.tagline}</p>
+        <p style={{ opacity: 0.6, fontSize: "0.75rem" }}>{t.footer.credits}</p>
       </footer>
     </>
   );

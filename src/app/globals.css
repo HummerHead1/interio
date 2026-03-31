@@ -31,6 +31,9 @@
   --t-card-shadow: rgba(200, 144, 90, 0.06);
   --t-card-hover-border: rgba(200, 144, 90, 0.45);
   --t-model-bg: #111110;
+  --t-studio-highlight: #2A2926;
+  --t-studio-mid: #1A1918;
+  --t-studio-dark: #0D0D0C;
   --t-spinner-track: #2C2A27;
   --t-hover-bg: rgba(200, 144, 90, 0.07);
   --t-active-bg: rgba(200, 144, 90, 0.14);
@@ -58,6 +61,9 @@
   --t-card-shadow: rgba(0, 0, 0, 0.05);
   --t-card-hover-border: rgba(160, 98, 46, 0.45);
   --t-model-bg: #EDE8E0;
+  --t-studio-highlight: #E8E4DC;
+  --t-studio-mid: #D5CFC5;
+  --t-studio-dark: #B8B0A4;
   --t-spinner-track: #DDD8D0;
   --t-hover-bg: rgba(160, 98, 46, 0.06);
   --t-active-bg: rgba(160, 98, 46, 0.12);
@@ -96,6 +102,102 @@ html {
 
 model-viewer {
   --poster-color: transparent;
+}
+
+/* ===== PRODUCT STUDIO BACKDROP ===== */
+
+.product-studio {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse 120% 100% at 50% 40%,
+    var(--t-studio-highlight) 0%,
+    var(--t-studio-mid) 50%,
+    var(--t-studio-dark) 100%
+  );
+}
+
+/* Subtle vignette overlay */
+.product-studio::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 45%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Soft floor reflection gradient */
+.product-studio::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ===== AR PREVIEW STAGE (CSS floor behind transparent model-viewer) ===== */
+
+.ar-preview-stage {
+  position: relative;
+  /* Top = warm wall, bottom = wood floor */
+  background: linear-gradient(
+    180deg,
+    var(--t-studio-highlight) 0%,
+    var(--t-studio-mid) 55%,
+    #A07850 55.5%,
+    #8B6540 100%
+  );
+}
+
+/* Wood plank lines on the floor portion */
+.ar-preview-stage::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 45%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 59px,
+    rgba(0,0,0,0.08) 59px,
+    rgba(0,0,0,0.08) 60px
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Subtle shadow line at wall-floor junction */
+.ar-preview-stage::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 54%;
+  height: 8px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ar-preview-stage model-viewer,
+.ar-preview-stage > div {
+  position: relative;
+  z-index: 1;
 }
 
 /* ===== ROOM STAGE BACKGROUND ===== */
@@ -186,6 +288,19 @@ model-viewer {
 }
 
 /* ===== ANIMATIONS ===== */
+
+/* Model-viewer entrance: rise + scale into view (Wayfair-inspired) */
+.model-viewer-entrance {
+  opacity: 0;
+  transform: translateY(24px) scale(0.92);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.model-viewer-entrance.model-loaded {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
 
 /* Classic upward fade — body content */
 @keyframes fadeIn {

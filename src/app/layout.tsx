@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Outfit, Fraunces } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
 import AuthProvider from "@/components/AuthProvider";
+import { LanguageProvider } from "@/lib/i18n";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -47,9 +48,11 @@ export default function RootLayout({
         className="min-h-dvh flex flex-col"
         style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}
       >
-        <AuthProvider>
-          <ThemeProvider>{children}</ThemeProvider>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </AuthProvider>
+        </LanguageProvider>
         <Analytics />
         <SpeedInsights />
       </body>

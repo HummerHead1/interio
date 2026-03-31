@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
 import { useAuth } from "./AuthProvider";
+import { useLanguage } from "@/lib/i18n";
 
 export default function Header() {
   const { theme, toggle } = useTheme();
   const { user, profile, isAdmin, signOut, loading } = useAuth();
+  const { lang, t, toggle: toggleLang } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,7 +65,7 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <Link
             href="/browse"
-            aria-label="Search furniture"
+            aria-label={t.nav.searchAriaLabel}
             className="w-9 h-9 rounded-full flex items-center justify-center icon-btn"
             style={{
               backgroundColor: "var(--t-surface)",
@@ -77,10 +79,26 @@ export default function Header() {
             </svg>
           </Link>
 
+          {/* Language toggle */}
+          <button
+            onClick={toggleLang}
+            aria-label={t.nav.langAriaLabel}
+            className="h-9 px-2.5 rounded-full flex items-center justify-center icon-btn text-xs font-semibold tracking-wide"
+            style={{
+              backgroundColor: "var(--t-surface)",
+              border: "1px solid var(--t-border)",
+              color: "var(--t-text-dim)",
+              letterSpacing: "0.04em",
+              minWidth: "2.25rem",
+            }}
+          >
+            {lang === "en" ? "CZ" : "EN"}
+          </button>
+
           {/* Theme toggle */}
           <button
             onClick={toggle}
-            aria-label="Toggle theme"
+            aria-label={t.nav.themeAriaLabel}
             className="w-9 h-9 rounded-full flex items-center justify-center icon-btn"
             style={{
               backgroundColor: "var(--t-surface)",
@@ -137,16 +155,16 @@ export default function Header() {
                   </div>
                   <Link href="/favorites" onClick={() => setMenuOpen(false)} className="menu-item flex items-center gap-2 px-4 py-2.5 text-sm" style={{ color: "var(--t-text)" }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-                    My Favorites
+                    {t.nav.myFavorites}
                   </Link>
                   <Link href="/ar-session" onClick={() => setMenuOpen(false)} className="menu-item flex items-center gap-2 px-4 py-2.5 text-sm" style={{ color: "var(--t-text)" }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" /><path d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" /></svg>
-                    AR Session
+                    {t.nav.arSession}
                   </Link>
                   {isAdmin && (
                     <Link href="/admin" onClick={() => setMenuOpen(false)} className="menu-item flex items-center gap-2 px-4 py-2.5 text-sm" style={{ color: "var(--t-text)" }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
-                      Admin Panel
+                      {t.nav.adminPanel}
                     </Link>
                   )}
                   <button
@@ -155,7 +173,7 @@ export default function Header() {
                     style={{ color: "var(--t-text-dim)", borderColor: "var(--t-border)" }}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-                    Sign out
+                    {t.nav.signOut}
                   </button>
                 </div>
               )}
@@ -166,7 +184,7 @@ export default function Header() {
               className="text-sm font-medium px-4 py-2 rounded-full whitespace-nowrap btn-primary"
               style={{ backgroundColor: "var(--t-accent)", color: "var(--t-bg)" }}
             >
-              Sign in
+              {t.nav.signIn}
             </Link>
           )}
         </div>

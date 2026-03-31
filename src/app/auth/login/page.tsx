@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/lib/i18n";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useLanguage();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -74,7 +76,7 @@ export default function LoginPage() {
           className="text-xl font-semibold text-center mb-6"
           style={{ fontFamily: "var(--font-playfair)" }}
         >
-          Sign in
+          {t.login.title}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -83,7 +85,7 @@ export default function LoginPage() {
               className="block text-xs mb-1.5 uppercase tracking-wider"
               style={{ color: "var(--t-text-dim)" }}
             >
-              Email
+              {t.login.emailLabel}
             </label>
             <input
               type="email"
@@ -103,7 +105,7 @@ export default function LoginPage() {
               className="block text-xs mb-1.5 uppercase tracking-wider"
               style={{ color: "var(--t-text-dim)" }}
             >
-              Password
+              {t.login.passwordLabel}
             </label>
             <input
               type="password"
@@ -132,7 +134,7 @@ export default function LoginPage() {
               color: "var(--t-bg)",
             }}
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? t.login.submitting : t.login.submit}
           </button>
         </form>
 
@@ -140,13 +142,13 @@ export default function LoginPage() {
           className="text-sm text-center mt-6"
           style={{ color: "var(--t-text-dim)" }}
         >
-          Don&apos;t have an account?{" "}
+          {t.login.noAccount}{" "}
           <Link
             href="/auth/signup"
             className="underline"
             style={{ color: "var(--t-accent)" }}
           >
-            Sign up
+            {t.login.signUp}
           </Link>
         </p>
       </div>

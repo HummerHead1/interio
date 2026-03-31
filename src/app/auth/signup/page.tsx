@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/lib/i18n";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ export default function SignUpPage() {
   const [success, setSuccess] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useLanguage();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -82,16 +84,16 @@ export default function SignUpPage() {
           >
             ✓
           </div>
-          <h2 className="text-lg font-semibold mb-2">Check your email</h2>
+          <h2 className="text-lg font-semibold mb-2">{t.signup.checkEmailTitle}</h2>
           <p className="text-sm mb-6" style={{ color: "var(--t-text-dim)" }}>
-            We sent a confirmation link to <strong>{email}</strong>
+            {t.signup.checkEmailBody(email)}
           </p>
           <Link
             href="/auth/login"
             className="text-sm underline"
             style={{ color: "var(--t-accent)" }}
           >
-            Back to sign in
+            {t.signup.backToSignIn}
           </Link>
         </div>
       </div>
@@ -140,7 +142,7 @@ export default function SignUpPage() {
           className="text-xl font-semibold text-center mb-6"
           style={{ fontFamily: "var(--font-playfair)" }}
         >
-          Create account
+          {t.signup.title}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -149,7 +151,7 @@ export default function SignUpPage() {
               className="block text-xs mb-1.5 uppercase tracking-wider"
               style={{ color: "var(--t-text-dim)" }}
             >
-              Name
+              {t.signup.nameLabel}
             </label>
             <input
               type="text"
@@ -169,7 +171,7 @@ export default function SignUpPage() {
               className="block text-xs mb-1.5 uppercase tracking-wider"
               style={{ color: "var(--t-text-dim)" }}
             >
-              Email
+              {t.signup.emailLabel}
             </label>
             <input
               type="email"
@@ -189,7 +191,7 @@ export default function SignUpPage() {
               className="block text-xs mb-1.5 uppercase tracking-wider"
               style={{ color: "var(--t-text-dim)" }}
             >
-              Password
+              {t.signup.passwordLabel}
             </label>
             <input
               type="password"
@@ -219,7 +221,7 @@ export default function SignUpPage() {
               color: "var(--t-bg)",
             }}
           >
-            {loading ? "Creating account..." : "Sign up"}
+            {loading ? t.signup.submitting : t.signup.submit}
           </button>
         </form>
 
@@ -227,13 +229,13 @@ export default function SignUpPage() {
           className="text-sm text-center mt-6"
           style={{ color: "var(--t-text-dim)" }}
         >
-          Already have an account?{" "}
+          {t.signup.hasAccount}{" "}
           <Link
             href="/auth/login"
             className="underline"
             style={{ color: "var(--t-accent)" }}
           >
-            Sign in
+            {t.signup.signIn}
           </Link>
         </p>
       </div>

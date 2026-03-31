@@ -5,14 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import { getProductsByCategory, searchProducts } from "@/data/products";
-
-const categories = [
-  { key: "all", label: "All" },
-  { key: "chairs", label: "Chairs" },
-  { key: "sofas", label: "Sofas" },
-  { key: "beds", label: "Beds" },
-  { key: "tables", label: "Tables" },
-];
+import { useLanguage } from "@/lib/i18n";
 
 const stores = ["All", "Alza", "Bonami", "XXXLutz"];
 
@@ -26,6 +19,8 @@ export default function BrowsePage() {
 
 function BrowseContent() {
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [store, setStore] = useState("All");
@@ -40,6 +35,14 @@ function BrowseContent() {
   const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">(
     "default"
   );
+
+  const categories = [
+    { key: "all", label: t.browse.categories.all },
+    { key: "chairs", label: t.browse.categories.chairs },
+    { key: "sofas", label: t.browse.categories.sofas },
+    { key: "beds", label: t.browse.categories.beds },
+    { key: "tables", label: t.browse.categories.tables },
+  ];
 
   // If searching, search takes priority over category filter
   let filtered = search.trim()
@@ -60,7 +63,7 @@ function BrowseContent() {
             className="text-3xl font-bold mb-6"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Browse Furniture
+            {t.browse.title}
           </h1>
 
           {/* Search bar */}
@@ -86,7 +89,7 @@ function BrowseContent() {
                 setSearch(e.target.value);
                 if (e.target.value.trim()) setCategory("all");
               }}
-              placeholder="Search furniture... e.g. &quot;red chair&quot; or &quot;STEFAN&quot;"
+              placeholder={t.browse.searchPlaceholder}
               className="w-full pl-11 pr-10 py-3 rounded-xl text-sm outline-none transition-all duration-200 placeholder:opacity-50"
               style={{
                 backgroundColor: "var(--t-surface)",
@@ -160,7 +163,7 @@ function BrowseContent() {
                   opacity: store === s ? 1 : 0.85,
                 }}
               >
-                {s}
+                {s === "All" ? t.browse.stores.All : s}
               </button>
             ))}
             <select
@@ -173,9 +176,9 @@ function BrowseContent() {
                 border: "1px solid var(--t-border)",
               }}
             >
-              <option value="default">Sort</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
+              <option value="default">{t.browse.sortDefault}</option>
+              <option value="price-asc">{t.browse.sortPriceAsc}</option>
+              <option value="price-desc">{t.browse.sortPriceDesc}</option>
             </select>
           </div>
 
@@ -186,7 +189,7 @@ function BrowseContent() {
                 className="text-xs"
                 style={{ color: "var(--t-text-dim)" }}
               >
-                {filtered.length} product{filtered.length !== 1 && "s"}
+                {t.browse.products(filtered.length)}
               </span>
               {search.trim() && (
                 <span
@@ -231,7 +234,7 @@ function BrowseContent() {
                 className="text-xs underline ml-1"
                 style={{ color: "var(--t-text-dim)" }}
               >
-                Clear
+                {t.browse.clear}
               </button>
             </div>
           )}
@@ -247,7 +250,7 @@ function BrowseContent() {
           {filtered.length === 0 && (
             <div className="text-center py-16">
               <p style={{ color: "var(--t-text-dim)" }}>
-                No products match your filters.
+                {t.browse.noProducts}
               </p>
               <button
                 onClick={() => {
@@ -257,7 +260,7 @@ function BrowseContent() {
                 className="text-sm underline mt-2"
                 style={{ color: "var(--t-accent)" }}
               >
-                Clear filters
+                {t.browse.clearFilters}
               </button>
             </div>
           )}
