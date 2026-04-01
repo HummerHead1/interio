@@ -49,22 +49,22 @@ export async function POST(req: NextRequest) {
       body: formData,
     });
 
-    if (!uploadRes.ok) {
-      const err = await uploadRes.text();
-      console.error("Tripo upload error:", err);
+    const uploadResText = await uploadRes.text();
+    let uploadData;
+    try { uploadData = JSON.parse(uploadResText); } catch { uploadData = null; }
+
+    if (!uploadRes.ok || !uploadData) {
       return NextResponse.json(
-        { error: "Failed to upload image" },
+        { error: `Upload failed (${uploadRes.status}): ${uploadResText.substring(0, 200)}` },
         { status: 502 }
       );
     }
 
-    const uploadData = await uploadRes.json();
     const imageToken = uploadData.data?.image_token;
 
     if (!imageToken) {
-      console.error("No image_token in Tripo response:", uploadData);
       return NextResponse.json(
-        { error: "Failed to process image" },
+        { error: `No image_token: ${JSON.stringify(uploadData).substring(0, 200)}` },
         { status: 502 }
       );
     }
@@ -79,22 +79,23 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         type: "image_to_model",
         file: {
-          type: "png",
+          type: ext === "jpg" ? "jpeg" : ext,
           file_token: imageToken,
         },
       }),
     });
 
-    if (!taskRes.ok) {
-      const err = await taskRes.text();
-      console.error("Tripo task error:", err);
+    const taskResText = await taskRes.text();
+    let taskData;
+    try { taskData = JSON.parse(taskResText); } catch { taskData = null; }
+
+    if (!taskRes.ok || !taskData) {
       return NextResponse.json(
-        { error: "Failed to start 3D generation" },
+        { error: `Task failed (${taskRes.status}): ${taskResText.substring(0, 200)}` },
         { status: 502 }
       );
     }
 
-    const taskData = await taskRes.json();
     const taskId = taskData.data?.task_id;
 
     if (!taskId) {
