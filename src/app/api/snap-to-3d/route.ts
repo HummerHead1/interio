@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase-server";
 
-const TRIPO_API_KEY = process.env.TRIPO_API_KEY!;
+// Allow larger request bodies for image uploads
+export const maxDuration = 60;
+
+const TRIPO_API_KEY = process.env.TRIPO_API_KEY || "";
 const TRIPO_BASE = "https://api.tripo3d.ai/v2/openapi";
 
 // POST — create a new scan via Tripo AI
@@ -19,6 +22,10 @@ export async function POST(req: NextRequest) {
 
   if (!imageBase64) {
     return NextResponse.json({ error: "No image provided" }, { status: 400 });
+  }
+
+  if (!TRIPO_API_KEY) {
+    return NextResponse.json({ error: "Tripo API key not configured" }, { status: 500 });
   }
 
   try {
@@ -98,13 +105,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Step 3: Save to Supabase
+    // Step 3: Save to Supabase (store truncated image for thumbnail)
+    // Truncate base64 to ~100KB for DB storage (just for preview thumbnail)
+    const thumbData = imageBase64.length > 100000
+      ? imageBase64.substring(0, 100000)
+      : imageBase64;
+
     const { data, error } = await supabase
       .from("scanned_models")
       .insert({
         user_id: user.id,
         name: name || "My Furniture",
-        image_data: imageBase64,
+        image_data: thumbData,
         meshy_task_id: taskId, // reusing column name for Tripo task ID
         status: "processing",
       })

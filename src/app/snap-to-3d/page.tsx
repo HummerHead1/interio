@@ -11,6 +11,25 @@ const ModelViewer = dynamic(() => import("@/components/ModelViewer"), {
   ssr: false,
 });
 
+/** Resize image to maxDim and return as JPEG base64 data URL */
+function compressImage(base64: string, maxDim: number): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/jpeg", 0.85));
+    };
+    img.src = base64;
+  });
+}
+
 interface Scan {
   id: string;
   name: string;
@@ -27,6 +46,7 @@ export default function SnapToTryPage() {
   const { t } = useLanguage();
   const [scans, setScans] = useState<Scan[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [selectedScan, setSelectedScan] = useState<Scan | null>(null);
@@ -104,11 +124,16 @@ export default function SnapToTryPage() {
     hapticMedium();
 
     try {
+      setError(null);
+
+      // Compress image before sending — resize to max 1024px
+      const compressedImage = await compressImage(imagePreview, 1024);
+
       const res = await fetch("/api/snap-to-3d", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          imageBase64: imagePreview,
+          imageBase64: compressedImage,
           name: name || "My Furniture",
         }),
       });
@@ -118,10 +143,13 @@ export default function SnapToTryPage() {
         setImagePreview(null);
         setName("");
         if (fileInputRef.current) fileInputRef.current.value = "";
-        fetchScans();
+        await fetchScans();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || `Error ${res.status}`);
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      setError(String(err));
     } finally {
       setUploading(false);
     }
@@ -353,6 +381,10 @@ export default function SnapToTryPage() {
                 </>
               )}
             </button>
+          )}
+
+          {error && (
+            <p className="mt-3 text-sm text-red-500 text-center">{error}</p>
           )}
         </div>
 
